@@ -1,2 +1,7 @@
 obj
 ccompiler
+*.out
+*.yy.c
+parser.tab.h
+parser.tab.c
+*.swp
