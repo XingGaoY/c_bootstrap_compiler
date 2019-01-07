@@ -5,7 +5,9 @@
  */
 %{
 #include <math.h>
-#include <parser.tab.h>
+#include <node.hpp>
+#include "parser.tab.hpp"
+extern "C" int yywrap(){}
 %}
 
 DIGIT [0-9]
@@ -29,9 +31,15 @@ FS    (f|F|l|L)
                 return FLOAT;
               }
 
-{ID}            printf("An identifier: %s\n", yytext);
-%%
+["+""-""*""/"] {
+                return *yytext;
+              }
 
-main(){
-    yylex();
-}
+">="    return GE;
+"<="    return LE;
+"=="    return EQ;
+"!="    return NE;
+
+{ID}            printf("An identifier: %s\n", yytext);
+[ \t\v\n\f] ;   /* ignore whitespace */
+%%

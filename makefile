@@ -2,8 +2,9 @@ LEX := flex
 YACC := bison
 YFLAGS := -d
 LEX := flex
-CC := $gcc
-CFLAGS := -Wall -g -I src/include
+CXX := g++
+CXXFLAGS := -Wall -g -Isrc/include -std=c++11
+
 
 CUR_DIR := $(shell pwd)
 OBJ_DIR := $(CUR_DIR)/obj
@@ -16,25 +17,33 @@ DIRS := src/core
 
 #OBJS := $(patsubst src/%.c, obj/%.o, $(SRC))
 
-#ccompiler : $(OBJS)
-#	$(CC) $(CFLAGS) -o ccompiler $(OBJS)
+ccompiler : $(DIRS)/scanner.yy.cpp $(DIRS)/parser.tab.cpp $(DIRS)/kern.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $(DIRS)/scanner.yy.cpp $(DIRS)/parser.tab.cpp $(DIRS)/kern.cpp
 
 #$(OBJS):obj/%.o:src/%.c
 #obj/parser.o: $(DIRS)/parser.tab.c
 #	$(CC) -c $(DIRS)/parser.tab.c -o $@
 
-#obj/lex.yy.o: $(DIRS)/lex.yy.o parser.tab.h
-#	$(CC) -c $(DIRS)/lex.yy.c -o $@
+#obj/kern.o: $(DIRS)/kern.cpp
+#	$(CXX) $(CXXFLAGS) -c $(DIRS)/kern.cpp -o $@
 
-$(DIRS)/scanner.yy.c: $(DIRS)/scanner.lex $(DIRS)/parser.tab.h
+#obj/scanner.yy.o: $(DIRS)/scanner.yy.cpp $(DIRS)/parser.tab.hpp
+#	$(CXX) $(CXXFLAGS) -c $(DIRS)/scanner.yy.cpp -o $@
+
+#obj/parser.tab.o: $(DIRS)/parser.tab.cpp
+#	$(CXX) $(CXXFLAGS) $(DIRS)/parser.tab.cpp -o $@
+
+$(DIRS)/scanner.yy.cpp: $(DIRS)/scanner.lex $(DIRS)/parser.tab.hpp
 	$(LEX) -o $@ $(DIRS)/scanner.lex
-$(DIRS)/parser.tab.c $(DIRS)/parser.tab.h: $(DIRS)/parser.y
+
+$(DIRS)/parser.tab.cpp $(DIRS)/parser.tab.hpp: $(DIRS)/parser.y
 	cd ./src/core
-	$(YACC) $(YFLAGS) $< -o $(DIRS)/parser.tab.c
+	$(YACC) $(YFLAGS) $< -o $(DIRS)/parser.tab.cpp
 
 .PHONY: clean
 
 clean:
 	find . -name *.o | xargs rm -f
 	rm src/core/parser.tab.*
-	rm src/core/scanner.yy.c
+	rm src/core/scanner.yy.cpp
+	rm ccompiler
