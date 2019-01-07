@@ -36,3 +36,5 @@ $(DIRS)/parser.tab.c $(DIRS)/parser.tab.h: $(DIRS)/parser.y
 
 clean:
 	find . -name *.o | xargs rm -f
+	rm src/core/parser.tab.*
+	rm src/core/scanner.yy.c

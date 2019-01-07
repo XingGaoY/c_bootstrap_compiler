@@ -9,19 +9,25 @@
 %}
 
 DIGIT [0-9]
+H     [a-zA-Z0-9]
+E     [Ee][+-]?{DIGIT}+
+P     [Pp][+-]?{H}+
 ID    [a-z][a-z0-9]*
-
+IS    (u|U|l|L)*
+FS    (f|F|l|L)
 %%
 
-{DIGIT}+    {
-                printf("An integer: %s (%d)\n", yytext,
-                       atoi(yytext));
-            }
+{DIGIT}+{IS}? {
+                /* decimal constant */
+                yylval.ival = atoi(yytext);
+                return INT; 
+              }
 
-{DIGIT}+"."{DIGIT}*     {
-                printf("An float: %s (%g)\n", yytext,
-                       atof(yytext));
-            }
+{DIGIT}*"."{DIGIT}+({E})?{FS}? {
+                /* decimal float constant */    
+                yylval.fval = atof(yytext);
+                return FLOAT;
+              }
 
 {ID}            printf("An identifier: %s\n", yytext);
 %%
